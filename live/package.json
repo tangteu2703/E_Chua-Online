@@ -1,0 +1,13 @@
+{
+  "name": "chanh-dien-live",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TikTok LIVE overlay server for Chánh Điện Tịnh Tâm",
+  "scripts": { "start": "node server.mjs", "start:syscert": "node --use-system-ca server.mjs" },
+  "dependencies": {
+    "msedge-tts": "2.1.1",
+    "tiktok-live-connector": "2.5.0",
+    "ws": "8.18.0"
+  }
+}
