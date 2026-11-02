@@ -6,7 +6,7 @@ Mã nguồn chia sẻ miễn phí (MIT). Có hai phần:
 
 | Thư mục                 | Là gì                                                                                                                                   |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `index.html`, `assets/` | Trang chủ công khai: tự chuyển tới `live/overlay.html` ở chế độ xem thử (có bot mô phỏng, không cần server). Đăng được lên GitHub Pages: https://tangteu2703.github.io/E_Chua-Online/. `classic.html` là bản web tĩnh cũ |
+| `index.html`, `assets/` | Giao diện hội trường (overlay 9:16) và ảnh, nhạc. Mở qua link công khai thì tự chạy chế độ xem thử (bot mô phỏng, không cần server): https://tangteu2703.github.io/E_Chua-Online/ |
 | `live/`                 | Bộ công cụ phát LIVE: server Node, overlay 9:16, bảng điều khiển                                                                        |
 
 ## Chạy bộ LIVE trên máy phát
@@ -21,7 +21,7 @@ npm start
 
 1. Mở `http://localhost:3000/live/control.html` (bảng điều khiển).
 2. Bấm **Mở màn hình overlay 9:16**, rồi bấm **Bật âm thanh** một lần trong cửa sổ đó (trình duyệt chặn tự phát tiếng).
-3. Trong TikTok LIVE Studio: _Add source → Window capture_ → chọn cửa sổ overlay. Với OBS thì dùng _Browser source_ trỏ tới `http://localhost:3000/live/overlay.html`, kích thước 1080×1920.
+3. Trong TikTok LIVE Studio: _Add source → Window capture_ → chọn cửa sổ overlay. Với OBS thì dùng _Browser source_ trỏ tới `http://localhost:3000/index.html`, kích thước 1080×1920.
 4. Bật LIVE trên TikTok, nhập `@username` vào bảng điều khiển, bấm **Kết nối**.
 
 Chưa live vẫn thử được: dùng **Thử tương tác**, **Đổ người mẫu 15/36/64/100** hoặc **Bot mô phỏng**.

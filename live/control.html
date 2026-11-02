@@ -62,7 +62,7 @@ button.red{background:var(--red);border-color:#b84a33}
   <h2>Bảng điều khiển chỉ chạy trên máy của bạn</h2>
   <p>Trang này cần server <b>node server.mjs</b> để kết nối TikTok, đọc giọng và điều khiển hội trường, nên không dùng được qua link GitHub.</p>
   <p class="hint">Cách mở: chạy <b>node server.mjs</b> trong thư mục <b>live</b>, rồi vào <b>http://localhost:3000/live/control.html</b>. Người xem chỉ cần mở trang chủ để xem giao diện.</p>
-  <a href="overlay.html"><button class="gold">Xem giao diện hội trường</button></a>
+  <a href="../index.html"><button class="gold">Xem giao diện hội trường</button></a>
 </div>
 
 <div class="grid">
@@ -214,7 +214,7 @@ if (REMOTE){ $('remoteNote').hidden = false; document.querySelector('.grid').hid
 $('btnConnect').onclick = () => send('connect', { uniqueId: $('uid').value });
 $('uid').onkeydown = e => { if (e.key==='Enter') send('connect', { uniqueId: $('uid').value }); };
 $('btnDisconnect').onclick = () => send('disconnect');
-$('btnOverlay').onclick = () => window.open('/live/overlay.html', 'overlay916', 'width=540,height=960');
+$('btnOverlay').onclick = () => window.open('/index.html', 'overlay916', 'width=540,height=960');
 $('btnCta').onclick = () => send('cta');
 document.querySelectorAll('[data-say]').forEach(b => b.onclick = () => send('chat', { id: pickedId, name: $('simName').value, text: b.dataset.say }));
 $('btnChat').onclick = () => send('chat', { id: pickedId, name: $('simName').value, text: $('simText').value });

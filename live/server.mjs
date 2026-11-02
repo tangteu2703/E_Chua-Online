@@ -377,7 +377,7 @@ const okHost = h => ALLOWED_HOSTS.has(String(h || '').toLowerCase());
 const SEP = path.sep;
 function resolveStatic(urlPath){
   let p = urlPath === '/' ? '/live/control.html' : urlPath;
-  if (!/^\/(assets|live)\//.test(p)) return null;
+  if (!/^\/(assets|live)\//.test(p) && p !== '/index.html') return null;       // /index.html = the hall (overlay) page
   if (p.split('/').some(seg => seg.startsWith('.') || seg === 'node_modules')) return null;
   if (/\.(mjs|json|md|log)$/i.test(p) && !p.startsWith('/assets/')) return null;      // never serve server code / package files
   const file = path.normalize(path.join(ROOT, p));
@@ -415,4 +415,4 @@ wss.on('connection', (ws, req) => {
     try { const m = JSON.parse(buf); if (m && m.t === 'ctl') onControl(m); } catch (e) { addLog('Lệnh lỗi: ' + e.message); }
   });
 });
-server.listen(PORT, HOST, () => addLog(`Server chạy tại http://localhost:${PORT}  ·  Bảng điều khiển: http://localhost:${PORT}/live/control.html  ·  Overlay: http://localhost:${PORT}/live/overlay.html`));
+server.listen(PORT, HOST, () => addLog(`Server chạy tại http://localhost:${PORT}  ·  Bảng điều khiển: http://localhost:${PORT}/live/control.html  ·  Giao diện (overlay): http://localhost:${PORT}/index.html`));
