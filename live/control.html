@@ -13,6 +13,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 var(--body);padding:18px max(16px,env(safe-area-inset-right)) 30px max(16px,env(safe-area-inset-left))}
 header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:baseline;justify-content:space-between;margin-bottom:14px}
 h1{font-family:var(--display);font-size:24px;margin:0;color:var(--gold)}
@@ -56,6 +57,13 @@ button.red{background:var(--red);border-color:#b84a33}
     <span class="chip" id="cnt">0 người</span>
   </div>
 </header>
+
+<div class="card" id="remoteNote" hidden style="max-width:620px;margin:8vh auto">
+  <h2>Bảng điều khiển chỉ chạy trên máy của bạn</h2>
+  <p>Trang này cần server <b>node server.mjs</b> để kết nối TikTok, đọc giọng và điều khiển hội trường, nên không dùng được qua link GitHub.</p>
+  <p class="hint">Cách mở: chạy <b>node server.mjs</b> trong thư mục <b>live</b>, rồi vào <b>http://localhost:3000/live/control.html</b>. Người xem chỉ cần mở trang chủ để xem giao diện.</p>
+  <a href="overlay.html"><button class="gold">Xem giao diện hội trường</button></a>
+</div>
 
 <div class="grid">
   <section class="card">
@@ -142,7 +150,7 @@ button.red{background:var(--red);border-color:#b84a33}
   </section>
 </div>
 
-<section class="card" style="margin-top:16px">
+<section class="card" id="logCard" style="margin-top:16px">
   <h2>Nhật ký</h2>
   <div id="log" aria-live="polite"></div>
 </section>
@@ -199,7 +207,9 @@ function connect(){
     else if (m.t==='bots') $('btnBots').textContent = m.on ? 'Tắt bot' : 'Bật bot';
   };
 }
-connect();
+// Opened from a public link (GitHub Pages) there is no server to talk to: show how to run it locally instead of a dead panel.
+const REMOTE = !['localhost','127.0.0.1','[::1]',''].includes(location.hostname);
+if (REMOTE){ $('remoteNote').hidden = false; document.querySelector('.grid').hidden = true; $('logCard').hidden = true; $('srv').textContent = 'Server: chưa chạy (không dùng được qua link)'; $('srv').className = 'chip bad'; } else connect();
 
 $('btnConnect').onclick = () => send('connect', { uniqueId: $('uid').value });
 $('uid').onkeydown = e => { if (e.key==='Enter') send('connect', { uniqueId: $('uid').value }); };

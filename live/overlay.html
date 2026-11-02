@@ -121,9 +121,9 @@ addEventListener('resize', fit); fit();
 
 /* ======================= assets ======================= */
 const A = {};
-const IMG = { hall:'/assets/hall.jpg', monk:'/assets/c_monk.png', nun:'/assets/c_nun.png', granny:'/assets/c_granny.png', man:'/assets/c_man.png',
-  woman:'/assets/c_woman.png', child:'/assets/c_child.png', anim_man:'/assets/anim_man.png', anim_woman:'/assets/anim_woman.png', anim_granny:'/assets/anim_granny.png',
-  lotus:'/assets/fx_lotus.png', halo:'/assets/fx_halo.png', bell:'/assets/fx_bell.png', incense:'/assets/fx_incense.png', petal:'/assets/fx_petal.png' };
+const IMG = { hall:'../assets/hall.jpg', monk:'../assets/c_monk.png', nun:'../assets/c_nun.png', granny:'../assets/c_granny.png', man:'../assets/c_man.png',
+  woman:'../assets/c_woman.png', child:'../assets/c_child.png', anim_man:'../assets/anim_man.png', anim_woman:'../assets/anim_woman.png', anim_granny:'../assets/anim_granny.png',
+  lotus:'../assets/fx_lotus.png', halo:'../assets/fx_halo.png', bell:'../assets/fx_bell.png', incense:'../assets/fx_incense.png', petal:'../assets/fx_petal.png' };
 for (const [k,src] of Object.entries(IMG)){ const im=new Image(); im.src=src; A[k]=im; }
 const ANIM = { man:{fw:212,fh:300,seatH:210}, woman:{fw:212,fh:300,seatH:220}, granny:{fw:195,fh:300,seatH:222} };
 const hasAnim = k => ANIM[k] && A['anim_'+k]?.naturalWidth > 0;
@@ -271,7 +271,7 @@ function showChant(text){ document.getElementById('chantText').textContent=text;
 let AC=null, master=null, musicGain=null, sfx=null, settings={ music:true, mo:true, moBpm:52, track:'auto', musicVol:50 };
 // Playlist = every file in assets/music (the server sends the list). settings.track: 'auto' = shuffle all, or one file name on loop.
 let TRACKS=['music1.mp3','music2.mp3'], curTrack=null, musicEl=null, trackSetting=settings.track;
-const trackUrl = n => '/assets/music/'+encodeURIComponent(n);
+const trackUrl = n => '../assets/music/'+encodeURIComponent(n);
 const musBase = () => (settings.musicVol??50)/100;
 document.getElementById('unmute').onclick = e => { e.currentTarget.remove(); startAudio(); };
 function startAudio(){
@@ -336,13 +336,18 @@ function hearts(v,n){ for (let i=0;i<Math.min(6,n);i++) petals.push({x:v.x+(Math
 
 /* ======================= server link ======================= */
 let ws=null;
+// Demo mode: opened from a public site (GitHub Pages) or with ?demo=1 → there is no server, so a built-in simulator plays the hall.
+const DEMO = /[?&]demo=1/.test(location.search) || !['localhost','127.0.0.1','[::1]',''].includes(location.hostname);
 function connect(){
+  if (DEMO) return setTimeout(startDemo, 0);      // after the whole script has run (seats, canvas, effects are ready)
   ws = new WebSocket(`ws://${location.host}/ws?role=overlay`);
   const st=document.getElementById('conn');
   ws.onopen=()=>{ st.textContent=''; };
   ws.onclose=()=>{ st.textContent='mất kết nối server… đang thử lại'; setTimeout(connect,2000); };
-  ws.onmessage=e=>{
-    const m=JSON.parse(e.data);
+  ws.onmessage=e=>handle(JSON.parse(e.data));
+}
+// one handler for every message, whether it comes from the server or from the demo simulator
+function handle(m){
     switch(m.t){
       case 'tracks': TRACKS=m.tracks||[]; Object.assign(settings,m.settings); applySettings(); break;
       case 'nexttrack': nextTrack(); break;
@@ -370,13 +375,57 @@ function connect(){
       case 'bell': bell(true); break;
       case 'mo1': mo(); break;
     }
-  };
 }
 function applySettings(){
   document.getElementById('title').textContent=settings.title||'Chánh Điện Tịnh Tâm';
   document.getElementById('subtitle').textContent=settings.subtitle||'Nam Mô A Di Đà Phật';
   duck(ttsPlaying); scheduleMo(); setGuide();
   if (settings.track!==trackSetting){ trackSetting=settings.track; nextTrack(); }          // another track picked in the panel
+}
+/* ======================= demo simulator (no server) ======================= */
+// Feeds handle() the same messages the real server would send, so the page looks alive on a static host. No TikTok, no voice.
+function startDemo(){
+  document.getElementById('conn').textContent='Bản xem thử · chạy server để kết nối TikTok thật';
+  const CAPS=[24,36,64,100], capFor=n=>CAPS.find(c=>n<=c)||100, pick=a=>a[Math.floor(Math.random()*a.length)];
+  const NA=['Diệu','Minh','Thiện','Huệ','Tịnh','Quảng','Chơn','Pháp','Nguyên','Tâm','Trí','Phước','Hạnh','Như','Bảo','Thanh','Từ','An','Giác','Tuệ','Liên','Ngọc','Kim','Đức','Thu','Mai','Phương','Gia','Khánh','Hải'];
+  const NB=['Hạnh','Tâm','Đức','An','Nhã','Trí','Như','Hỷ','Thanh','Đăng','Liên','Hải','Lộc','Nguyện','Ý','Châu','Lương','Hoa','Minh','Hương','Linh','Quang','Lạc','Giác','Lan','Anh','Thảo','Dung','Vy','Yến'];
+  const SKINS=['man','woman','woman','man','granny','monk','nun','child'];
+  const LINES=['Nam mô A Di Đà Phật','Nam mô Bổn Sư Thích Ca Mâu Ni Phật','Cầu cho gia đình bình an','Con xin thành tâm sám hối','Nguyện cầu cha mẹ mạnh khỏe','Mô Phật, an lạc quá','Chúc mọi người một ngày bình an','Cầu công việc hanh thông','Nam mô Quan Thế Âm Bồ Tát'];
+  const PRAYERS=['Nguyện cầu gia đạo bình an, vạn sự cát tường','Nguyện cầu cha mẹ mạnh khỏe, sống lâu','Nguyện hồi hướng công đức cho khắp pháp giới chúng sinh','Nguyện cầu thân tâm an lạc, phiền não tiêu trừ'];
+  const CHANTS=['Nam mô Bổn Sư Thích Ca Mâu Ni Phật. Nguyện đem công đức này, hướng về khắp tất cả, đệ tử và chúng sinh, đều trọn thành Phật đạo.','Nam mô A Di Đà Phật. Nguyện sanh Tây Phương Tịnh Độ trung, cửu phẩm liên hoa vi phụ mẫu.','Nam mô Đại Bi Quán Thế Âm Bồ Tát. Nguyện cho tất cả chúng sinh thân tâm an lạc, tai qua nạn khỏi.'];
+  const ACTS={ lay:{ms:8000,bows:3,label:'Lạy Phật'}, huong:{ms:32000,bows:3,label:'Thắp hương'}, dao:{ms:24000,bows:0,label:'Kinh hành'}, chap:{ms:4000,bows:1,label:'Chắp tay cầu nguyện'} };
+  const GIFTS=[['Hoa hồng',1],['Hoa hồng',1],['Hoa hồng',2],['Đèn hoa sen',30],['Chuông vàng',199]];
+  const V=new Map(), used=new Set(); let seq=0, stats={lay:0,niem:0}, chantI=0;
+  const newName=()=>{ for(let i=0;i<300;i++){ const a=pick(NA), b=pick(NB), n=a+' '+b; if(a!==b && !used.has(n)){ used.add(n); return n; } } return 'Phật tử '+(++seq); };
+  const mk=()=>({ id:'demo_'+(++seq), name:newName(), skin:pick(SKINS), avatar:'', coins:0, lay:0, niem:0, demo:false, busyUntil:0 });
+  const pub=v=>({ id:v.id, name:v.name, skin:v.skin, avatar:'', coins:v.coins, lay:v.lay, niem:v.niem, demo:false });
+  const crossed=(a,b)=>Math.floor(b/108)>Math.floor(a/108);
+  const someone=()=>{ const l=[...V.values()]; return l[Math.floor(Math.random()*l.length)]; };
+  const start=[]; for (let i=0;i<14;i++){ const v=mk(); v.lay=Math.floor(Math.random()*6); stats.lay+=v.lay; V.set(v.id,v); start.push(pub(v)); }
+  start[0].coins=V.get(start[0].id).coins=120; start[1].coins=V.get(start[1].id).coins=80; start[2].coins=V.get(start[2].id).coins=55;
+  handle({ t:'state', cap:capFor(V.size), startedAt:Date.now(), stats, viewers:start,
+    settings:{ title:'Chánh Điện Tịnh Tâm', subtitle:'Nam Mô A Di Đà Phật', joinKeyword:'Nam mô A Di Đà Phật', requireKeyword:true, music:true, mo:true, moBpm:52, track:'auto', musicVol:50 } });
+  function tick(){
+    const r=Math.random(), now=Date.now();
+    if (r<.14){                                                   // a newcomer walks in (the oldest quiet one leaves when the hall is full)
+      if (V.size>=64){ const q=someone(); if (q && !q.coins){ V.delete(q.id); handle({ t:'leave', id:q.id }); } }
+      if (V.size<64){ const v=mk(); V.set(v.id,v); handle({ t:'join', v:pub(v), cap:capFor(V.size) }); }
+    } else if (r<.45){ const v=someone(); if (v) handle({ t:'chat', id:v.id, name:v.name, text:pick(LINES) }); }
+    else if (r<.80){
+      const v=someone(); if (!v) return;
+      const act=pick(['lay','lay','huong','dao','chap','niem','niem']);
+      if (act==='niem'){ const b=stats.niem; v.niem++; stats.niem++; handle({ t:'act', id:v.id, name:v.name, act, lay:v.lay, niem:v.niem, stats });
+        if (crossed(b,stats.niem)) handle({ t:'milestone', kind:'niem', total:Math.floor(stats.niem/108)*108 }); }
+      else if (now>=v.busyUntil){ const a=ACTS[act], b=stats.lay; v.busyUntil=now+a.ms; v.lay+=a.bows; stats.lay+=a.bows;
+        handle({ t:'act', id:v.id, name:v.name, act, label:a.label, lay:v.lay, niem:v.niem, stats });
+        if (a.bows && crossed(b,stats.lay)) handle({ t:'milestone', kind:'lay', total:Math.floor(stats.lay/108)*108 }); }
+    } else if (r<.93){ const v=someone(); if (v) handle({ t:'like', id:v.id, n:1+Math.floor(Math.random()*4) }); }
+    else { const v=someone(); if (!v) return; const [giftName,coins]=pick(GIFTS); v.coins+=coins;
+      handle({ t:'gift', id:v.id, name:v.name, giftName, count:1, coins, total:v.coins, tier:coins>=99?3:coins>=10?2:1, prayer:pick(PRAYERS) }); }
+    setTimeout(tick, 900+Math.random()*1800);
+  }
+  setTimeout(tick, 2500);
+  setInterval(()=>handle({ t:'chant', text:CHANTS[chantI++%CHANTS.length] }), 150000);
 }
 connect();
 

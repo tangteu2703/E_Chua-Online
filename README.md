@@ -4,10 +4,10 @@ Chánh điện online 2.5D cho TikTok LIVE. Mỗi người xem bình luận là 
 
 Mã nguồn chia sẻ miễn phí (MIT). Có hai phần:
 
-| Thư mục                 | Là gì                                                                   |
-| ----------------------- | ----------------------------------------------------------------------- |
-| `index.html`, `assets/` | Bản web tĩnh cho mọi người tự vào ngồi tụng (đăng lên Cloudflare Pages hoặc GitHub Pages: https://tangteu2703.github.io/E_Chua-Online/) |
-| `live/`                 | Bộ công cụ phát LIVE: server Node, overlay 9:16, bảng điều khiển        |
+| Thư mục                 | Là gì                                                                                                                                   |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `index.html`, `assets/` | Trang chủ công khai: tự chuyển tới `live/overlay.html` ở chế độ xem thử (có bot mô phỏng, không cần server). Đăng được lên GitHub Pages: https://tangteu2703.github.io/E_Chua-Online/. `classic.html` là bản web tĩnh cũ |
+| `live/`                 | Bộ công cụ phát LIVE: server Node, overlay 9:16, bảng điều khiển                                                                        |
 
 ## Chạy bộ LIVE trên máy phát
 
